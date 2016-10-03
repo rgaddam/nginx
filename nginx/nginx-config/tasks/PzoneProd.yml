@@ -1,0 +1,31 @@
+---
+ - name: Copy the ngnix-template file
+   template: 
+     src: templates/nginx-template 
+     dest: "/nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf" 
+     owner: root 
+     group: root 
+     mode: 0644
+   when: inventory_hostname in groups["{{MyTasksNodes}}"]
+
+ - name: Make copy of config file in Local Jump Server
+   fetch:
+     src: "/nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf"
+     dest: "/apps/nginx-conf/{{MyTasksNodes}}/"
+     flat: yes
+   when: inventory_hostname in groups [{{"MyTasksNodes"}}]
+
+ - name: Send Email after Adding the new nginx conf
+   local_action: mail
+    host="localhost"
+    port=25
+    subject="New Nginx Config Added"
+    body="New nginx config has been added {{upstreamApp}} in reference to {{ticketNo}}"
+    from=""
+    to=""
+    charset=utf8
+   when: inventory_hostname in groups["{{MyTasksNodes}}"]
+
+ - name: service nginx restart
+   service: name=nginx state=reloaded
+   when: inventory_hostname in groups["{{MyTasksNodes}}"]

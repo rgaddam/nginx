@@ -1,0 +1,26 @@
+---
+NGINX_TEMPS:
+  PZONEPROD:
+    source: nginx-template
+    destination: /nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf
+    ZONE: PzoneProd
+  PZONEPILOT:
+    source: nginx-template
+    destination: /nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf
+    ZONE: PzonePilot
+  TDMZPROD:
+    source: nginx-template
+    destination: /nas/apps/nginx-DMZ/conf.d/{{upstreamApp}}.conf
+    ZONE: TDMZProd
+  TDMZPILOT:
+    source: nginx-template
+    destination: /nas/apps/nginx-DMZ/conf.d/{{upstreamApp}}.conf
+    ZONE: TDMZPilot
+  BZONEPROD:
+    source: nginx-template-DMZ
+    destination: /nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf
+    ZONE: BzoneProd
+  BZONEPILOT:
+    source: nginx-template-DMZ
+    destination: /nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf
+    ZONE: BzonePilot

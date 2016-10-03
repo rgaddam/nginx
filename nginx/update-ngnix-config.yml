@@ -1,0 +1,7 @@
+---
+- hosts: nginx-region
+  gather_facts: true 
+  vars_files:
+    - variables.yml
+  roles:
+    - nginx-config

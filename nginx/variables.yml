@@ -1,0 +1,8 @@
+### Nginx Config Updates from Ticket ## 
+
+upstreamApp: "test-config"
+IPAddress: "1.2.3.4"
+PortNo: "80"
+requestedUrl: "test.corp.com"
+ticketNo: "S12345"
+

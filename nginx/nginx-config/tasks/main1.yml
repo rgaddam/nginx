@@ -1,0 +1,53 @@
+---
+# tasks file for nginx-config
+
+  - name: Copy the nginx-config file 
+    template: src=templates/nginx-template dest=/nas/apps/oracle/nginx/conf.d/ owner=root group=root mode=0644
+    when: inventory_hostname in groups["PzoneProd"] or inventory_hostname in groups["PzonePilot"]
+
+  - name: Copy the ngnix-template file
+    template: src=templates/nginx-template dest=/nas/apps/nginx-DMZ/conf.d owner=root group=root mode=0644
+    when: inventory_hostname in groups["TDMZProd"] or inventory_hostname in groups["TDMZPilot"]
+
+  - name: Copy the ngnix-template file 
+    template: src=templates/nginx-template-DMZ dest=/nas/apps/oracle/nginx/conf.d/ owner=root group=root mode=0644
+    when: inventory_hostname in groups["BzoneProd"] or inventory_hostname in groups["BzonePilot"]
+
+  - name: Rename the nginx-config name to app-name 
+    command: mv /nas/apps/oracle/nginx/conf.d/nginx-template /nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf
+    when: inventory_hostname in groups["PzoneProd"] or inventory_hostname in groups["PzonePilot"]
+
+  - name: Rename the nginx-config name to app-name
+    command: mv /nas/apps/nginx-DMZ/conf.d/nginx-template /nas/apps/nginx-DMZ/conf.d/{{upstreamApp}}.conf
+    when: inventory_hostname in groups["TDMZProd"] or inventory_hostname in groups["TDMZPilot"]
+
+  - name: Rename the nginx-config name to app-name
+    command: mv /nas/apps/oracle/nginx/conf.d/nginx-template-DMZ /nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf
+    when: inventory_hostname in groups["BzoneProd"] or inventory_hostname in groups["BzonePilot"]
+
+  - name: Make copy of config file in Local Jump Server
+    fetch: 
+      src= "/nas/apps/oracle/nginx/conf.d/{{upstreamApp}}.conf"
+      dest= "/apps/nginx-conf/{{ hostname }}"
+      flat= yes
+    when: hostname in groups {{item}} 
+    with_items:
+      - {BzonePilot}
+      - {BzoneProd}
+      - {PzoneProd}
+      - {PzonePilot} 
+      - {TDMZProd}
+      - {TDMZPilot} 
+
+  - name: Send Email after Adding the new nginx conf 
+    local_action: mail
+     host="localhost"
+     port=25
+     subject="New Nginx Config Added"
+     body="New nginx config has been added {{upstreamApp}} in reference to {{ticketNo}}"
+     from=""
+     to=""
+     charset=utf8
+
+  - name: service nginx restart 
+    service: name=nginx state=restarted
