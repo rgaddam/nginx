@@ -23,7 +23,9 @@
     body="New nginx config has been added {{upstreamApp}} in reference to {{ticketNo}}"
     from=""
     to=""
+    attach="/apps/nginx/nginx-bckup/{{MyTasksNodes}}/{{upstreamApp}}.conf"
     charset=utf8
+   run_once: true
    when: inventory_hostname in groups["{{MyTasksNodes}}"]
 
  - name: service nginx restart
